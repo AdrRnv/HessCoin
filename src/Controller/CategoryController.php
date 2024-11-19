@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
-use App\Entity\Product;
 use App\Form\CategoryType;
-use App\Form\ProductType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,9 +37,14 @@ class CategoryController extends AbstractController
     }
 
     #[Route('/add', name: 'app_category_add')]
-    public function add(Request $request): Response
+    #[Route('/edit/{id}', name: 'app_category_edit')]
+    public function add(Request $request, ?int $id): Response
     {
-        $category = new Category();
+        if ($id) {
+            $category = $this->entityManager->getRepository(Category::class)->find($id);
+        } else {
+            $category = new Category();
+        }
         $form = $this->createForm(CategoryType::class, $category);
 
         $form->handleRequest($request);
@@ -56,5 +59,14 @@ class CategoryController extends AbstractController
         return $this->render('category/add.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/delete/{id}', name: 'app_category_delete')]
+    public function delete(Request $request, int $id): Response
+    {
+        $category = $this->entityManager->getRepository(Category::class)->find($id);
+        $this->entityManager->remove($category);
+        $this->entityManager->flush();
+        return $this->redirectToRoute('app_category_list');
     }
 }

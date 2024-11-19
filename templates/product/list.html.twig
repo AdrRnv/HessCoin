@@ -12,7 +12,8 @@
                         <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
                             {% if product.imageName %}
                                 <img src="{{ asset('uploads/product_images/' ~ product.imageName) }}"
-                                     alt="{{ product.title }}"
+                                     class="w-full h-40 object-cover rounded-t-lg">
+                                <img src="{{ product.imageName }}"
                                      class="w-full h-40 object-cover rounded-t-lg">
                             {% endif %}
                             <div class="p-4">

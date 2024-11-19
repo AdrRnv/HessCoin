@@ -38,9 +38,14 @@ class ProductController extends AbstractController
     }
 
     #[Route('/add', name: 'app_product_add')]
-    public function add(Request $request): Response
+    #[Route('/edit/{id}', name: 'app_product_edit')]
+    public function add(Request $request, ?int $id): Response
     {
-        $product = new Product();
+        if ($id) {
+            $product = $this->entityManager->getRepository(Product::class)->find($id);
+        } else {
+            $product = new Product();
+        }
         $form = $this->createForm(ProductType::class, $product);
 
         $form->handleRequest($request);
@@ -55,5 +60,14 @@ class ProductController extends AbstractController
         return $this->render('product/add.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/delete/{id}', name: 'app_product_delete')]
+    public function delete(Request $request, int $id): Response
+    {
+        $product = $this->entityManager->getRepository(Product::class)->find($id);
+        $this->entityManager->remove($product);
+        $this->entityManager->flush();
+        return $this->redirectToRoute('app_product_list');
     }
 }

@@ -35,10 +35,15 @@ class Product
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $imageName = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
     }
+
     public function getTitle(): string
     {
         return $this->title;
@@ -116,5 +121,14 @@ class Product
         $this->imageName = $imageName;
     }
 
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
 
 }
