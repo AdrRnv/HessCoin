@@ -20,6 +20,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
+    #[ORM\Column(length: 40)]
+    private ?string $firstName = null;
+    #[ORM\Column(length: 40)]
+    private ?string $lastName = null;
+
+    #[ORM\Column(length: 40)]
+    private ?string $phone = null;
+
+    #[ORM\Column(length: 40)]
+    private ?string $username = null;
+
+    #[ORM\Column(type: 'string',nullable: true)]
+    private ?string $imageName = null;
+
     /**
      * @var list<string> The user roles
      */
@@ -31,9 +45,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
-
-    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'user')]
-    private iterable $products;
 
     public function getId(): ?int
     {
@@ -59,13 +70,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string)$this->email;
+        return (string) $this->email;
     }
 
     /**
-     * @return list<string>
      * @see UserInterface
      *
+     * @return list<string>
      */
     public function getRoles(): array
     {
@@ -110,15 +121,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getProducts(): iterable
+    public function getFirstName(): ?string
     {
-        return $this->products;
+        return $this->firstName;
     }
 
-    public function setProducts(iterable $products): void
+    public function setFirstName(?string $firstName): void
     {
-        $this->products = $products;
+        $this->firstName = $firstName;
     }
 
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(?string $lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(?string $username): void
+    {
+        $this->username = $username;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
 
 }
