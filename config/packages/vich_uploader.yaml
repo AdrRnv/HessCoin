@@ -1,0 +1,13 @@
+# config/packages/vich_uploader.yaml
+vich_uploader:
+  db_driver: orm
+  mappings:
+    category_images:
+      uri_prefix: /uploads/category_images
+      upload_destination: '%kernel.project_dir%/public/uploads/category_images'
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+
+    product_images:
+      uri_prefix: /uploads/product_images
+      upload_destination: '%kernel.project_dir%/public/uploads/product_images'
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
