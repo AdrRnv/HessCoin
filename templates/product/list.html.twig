@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Produits{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-6 mt-8">
+        <h1 class="text-3xl font-bold text-center text-gray-700">Liste des Produits</h1>
+        <div class="mt-6">
+            {% if products is not empty %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for product in products %}
+                        <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
+                            {% if product.imageName %}
+                                <img src="{{ asset('uploads/product_images/' ~ product.imageName) }}"
+                                     alt="{{ product.title }}"
+                                     class="w-full h-40 object-cover rounded-t-lg">
+                            {% endif %}
+                            <div class="p-4">
+                                <h2 class="text-xl font-semibold text-gray-800">{{ product.title }}</h2>
+                                <p class="text-gray-600 mt-2">
+                                    {{ product.description|length > 100
+                                    ? product.description[:100] ~ '...'
+                                    : product.description }}
+                                </p>
+                                <p class="text-lg font-bold text-gray-800 mt-2">{{ product.price }} €</p>
+                                <div class="mt-4">
+                                    <h3 class="text-sm font-semibold text-gray-600">Catégories :</h3>
+                                    {% if product.categories is not empty %}
+                                        <ul class="list-disc ml-5 mt-1">
+                                            {% for category in product.categories %}
+                                                <li>{{ category.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p class="text-gray-500">Aucune catégorie.</p>
+                                    {% endif %}
+                                </div>
+                                <a href="#" class="mt-4 inline-block text-blue-600 hover:text-blue-500">Voir plus</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-gray-500 mt-4">Aucun produit trouvé.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

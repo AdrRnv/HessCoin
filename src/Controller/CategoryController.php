@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/category', name: 'app_category')]
+#[Route('/category')]
 class CategoryController extends AbstractController
 {
     public function __construct(private readonly EntityManagerInterface $entityManager)
