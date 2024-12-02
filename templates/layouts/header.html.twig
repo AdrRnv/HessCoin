@@ -51,6 +51,9 @@
                 <a class="mt-3 text-gray-600 hover:underline sm:mx-3 sm:mt-0" href="{{ path('app_category_list') }}">Categories</a>
                 <a class="mt-3 text-gray-600 hover:underline sm:mx-3 sm:mt-0" href="#">Contact</a>
                 <a class="mt-3 text-gray-600 hover:underline sm:mx-3 sm:mt-0" href="#">About</a>
+                {% if app.user %}
+                    <a class="mt-3 text-gray-600 hover:underline sm:mx-3 sm:mt-0" href="{{ path('user_favorites') }}">Favorites</a>
+                {% endif %}
             </div>
         </nav>
         <div class="relative mt-6 max-w-lg mx-auto">
