@@ -3,11 +3,40 @@
 {% block title %}Liste des Produits{% endblock %}
 
 {% block body %}
+    <form method="get" action="{{ path('app_product_list') }}">
+        <!-- Champ de recherche -->
+        <input
+                type="text"
+                name="search"
+                placeholder="Search products..."
+                value="{{ search|e }}"
+                class="border rounded p-2"
+        />
+
+        <!-- Filtre par catégorie -->
+        <select name="category" class="border rounded p-2">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+                <option
+                        value="{{ category.id }}"
+                        {% if category.id == categoryFilter %}selected{% endif %}
+                >
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Filter</button>
+    </form>
+    <div class="flex flex-col sm:flex-row">
+        <a class="mt-3 text-gray-600 hover:underline sm:mx-3 sm:mt-0" href="{{ path('app_product_list') }}">Reset</a>
+    </div>
     <div class="container mx-auto px-6 mt-8">
         <h1 class="text-3xl font-bold text-center text-gray-700">Liste des Produits</h1>
-        <div class="mt-6">
-            {% if products is not empty %}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for categoryName, products in productsByCategory %}
+            <div class="mt-16">
+                <h3 class="text-gray-600 text-2xl font-medium">{{ categoryName }}</h3>
+                <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-6">
                     {% for product in products %}
                         <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
                             {% if product.imageName %}
@@ -52,9 +81,7 @@
                         </div>
                     {% endfor %}
                 </div>
-            {% else %}
-                <p class="text-center text-gray-500 mt-4">Aucun produit trouvé.</p>
-            {% endif %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}

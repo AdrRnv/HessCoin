@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Favorite;
+use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\User;
 use App\Form\ProductType;
 use App\Repository\FavoriteRepository;
 use App\Repository\ProductRepository;
@@ -31,7 +33,7 @@ class ProductController extends AbstractController
     }
 
     #[Route('/list', name: 'app_product_list')]
-    public function list(EntityManagerInterface $entityManager): Response
+    public function list(EntityManagerInterface $entityManager, Request $request): Response
     {
         $products = $entityManager->getRepository(Product::class)->findAll();
         $user = $this->getUser();
@@ -44,18 +46,45 @@ class ProductController extends AbstractController
                 return $favorite->getProduct()->getId();
             }, $userFavorites);
         }
+        $search = $request->query->get('search', '');
+        $categoryFilter = $request->query->get('category', '');
+
+        $categories = $entityManager->getRepository(Category::class)->findAll();
+        $productsByCategory = [];
+
+        foreach ($categories as $category) {
+            if (!empty($categoryFilter) && $category->getId() != $categoryFilter) {
+                continue;
+            }
+
+            $filteredProducts = [];
+            foreach ($category->getProducts() as $product) {
+                if (empty($search) || stripos($product->getTitle(), $search) !== false) {
+                    $filteredProducts[] = $product;
+                }
+            }
+
+            if (count($filteredProducts) > 0) {
+                $productsByCategory[$category->getName()] = $filteredProducts;
+            }
+        }
 
         return $this->render('product/list.html.twig', [
             'products' => $products,
             'favoriteProductIds' => $favoriteProductIds,
+            'productsByCategory' => $productsByCategory,
+            'categories' => $categories,
+            'search' => $search,
+            'categoryFilter' => $categoryFilter,
         ]);
     }
-
 
     #[Route('/add', name: 'app_product_add')]
     #[Route('/edit/{id}', name: 'app_product_edit')]
     public function add(Request $request, ?int $id): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         if ($id) {
             $product = $this->entityManager->getRepository(Product::class)->find($id);
         } else {
@@ -66,6 +95,7 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $product->setUser($user);
             $this->entityManager->persist($product);
             $this->entityManager->flush();
 
