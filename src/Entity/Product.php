@@ -14,6 +14,23 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
+    #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'product', orphanRemoval: true)]
+    private Collection $favorites;
+
+    public function __construct()
+    {
+        $this->favorites = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
     use IdTrait;
 
     #[ORM\Column(length: 255)]
@@ -24,6 +41,7 @@ class Product
 
     #[ORM\Column]
     private float $price;
+
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'products')]
     #[ORM\JoinTable(name: 'product_categories')]
@@ -39,11 +57,9 @@ class Product
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    public function __construct()
-    {
-        $this->categories = new ArrayCollection();
-    }
 
+    #[ORM\Column(type: 'integer')]
+    private ?int $likesCount = 0;
     public function getTitle(): string
     {
         return $this->title;
@@ -130,5 +146,41 @@ class Product
     {
         $this->user = $user;
     }
+
+
+    public function addFavorite(Favorite $favorite): self
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+            $favorite->setProduct($this);
+            $this->likesCount++;
+        }
+
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): self
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            if ($favorite->getProduct() === $this) {
+                $favorite->setProduct(null);
+            }
+            $this->likesCount--;
+        }
+
+        return $this;
+    }
+
+    public function getLikesCount(): ?int
+    {
+        return $this->likesCount;
+    }
+
+    public function setLikesCount(?int $likesCount): void
+    {
+        $this->likesCount = $likesCount;
+    }
+
+
 
 }

@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Favorite;
 use App\Entity\Product;
 use App\Form\ProductType;
+use App\Repository\FavoriteRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,11 +34,23 @@ class ProductController extends AbstractController
     public function list(EntityManagerInterface $entityManager): Response
     {
         $products = $entityManager->getRepository(Product::class)->findAll();
+        $user = $this->getUser();
+
+        $favoriteProductIds = [];
+        if ($user) {
+            $userFavorites = $entityManager->getRepository(Favorite::class)->findBy(['user' => $user]);
+
+            $favoriteProductIds = array_map(function ($favorite) {
+                return $favorite->getProduct()->getId();
+            }, $userFavorites);
+        }
 
         return $this->render('product/list.html.twig', [
             'products' => $products,
+            'favoriteProductIds' => $favoriteProductIds,
         ]);
     }
+
 
     #[Route('/add', name: 'app_product_add')]
     #[Route('/edit/{id}', name: 'app_product_edit')]
@@ -68,6 +83,50 @@ class ProductController extends AbstractController
         $product = $this->entityManager->getRepository(Product::class)->find($id);
         $this->entityManager->remove($product);
         $this->entityManager->flush();
+        return $this->redirectToRoute('app_product_list');
+    }
+
+    #[Route('/product/{id}/add_favorite', name: 'add_favorite')]
+    public function addFavorite(int $id, ProductRepository $productRepository, EntityManagerInterface $entityManager): Response
+    {
+        $product = $productRepository->find($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException('Product not found');
+        }
+
+        $user = $this->getUser();
+        $favorite = new Favorite();
+        $favorite->setUser($user);
+        $favorite->setProduct($product);
+
+        $entityManager->persist($favorite);
+        $product->setLikesCount($product->getLikesCount() + 1);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_product_list');
+    }
+
+    #[Route('/product/{id}/remove_favorite', name: 'remove_favorite')]
+    public function removeFavorite(int $id, ProductRepository $productRepository, FavoriteRepository $favoriteRepository, EntityManagerInterface $entityManager): Response
+    {
+        $product = $productRepository->find($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException('Product not found');
+        }
+
+        $user = $this->getUser();
+
+        $favorite = $favoriteRepository->findOneBy(['user' => $user, 'product' => $product]);
+
+        if ($favorite) {
+            $entityManager->remove($favorite);
+            $entityManager->flush();
+            $product->setLikesCount($product->getLikesCount() - 1);
+            $entityManager->flush();
+        }
+
         return $this->redirectToRoute('app_product_list');
     }
 }

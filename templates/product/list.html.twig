@@ -11,8 +11,6 @@
                     {% for product in products %}
                         <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
                             {% if product.imageName %}
-                                <img src="{{ asset('uploads/product_images/' ~ product.imageName) }}"
-                                     class="w-full h-40 object-cover rounded-t-lg">
                                 <img src="{{ product.imageName }}"
                                      class="w-full h-40 object-cover rounded-t-lg">
                             {% endif %}
@@ -36,6 +34,19 @@
                                         <p class="text-gray-500">Aucune catégorie.</p>
                                     {% endif %}
                                 </div>
+                                {% if app.user %}
+                                    {% set isFavorite = product.id in favoriteProductIds %}
+                                    <form action="{{ path(isFavorite ? 'remove_favorite' : 'add_favorite', {'id': product.id}) }}" method="POST">
+                                        <button type="submit" class="mt-4 inline-block text-blue-600 hover:text-blue-500">
+                                            {% if isFavorite %}
+                                                Enlever des favoris
+                                            {% else %}
+                                                Ajouter aux favoris
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                {% endif %}
+
                                 <a href="#" class="mt-4 inline-block text-blue-600 hover:text-blue-500">Voir plus</a>
                             </div>
                         </div>
