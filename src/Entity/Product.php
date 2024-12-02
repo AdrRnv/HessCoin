@@ -155,4 +155,34 @@ class Product
         $this->postalCode = $postalCode;
     }
 
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function setFavorites(Collection $favorites): void
+    {
+        $this->favorites = $favorites;
+    }
+
+    public function getLikesCount(): ?int
+    {
+        return $this->likesCount;
+    }
+
+    public function setLikesCount(?int $likesCount): void
+    {
+        $this->likesCount = $likesCount;
+    }
+
+    public function getViews(): ?int
+    {
+        return $this->views;
+    }
+
+    public function setViews(?int $views): void
+    {
+        $this->views = $views;
+    }
+
 }
