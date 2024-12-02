@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.title }}{% endblock %}
+
+{% block body %}
+    <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
+        <div class="flex flex-col lg:flex-row items-center lg:space-x-6">
+            <div class="w-full lg:w-1/2">
+                <img
+                        class="w-full rounded-md object-cover shadow-lg"
+                        src="{{ product.imageName ? product.imageName : asset('images/placeholder.jpg') }}"
+                        alt="{{ product.title }}"
+                >
+            </div>
+
+            <div class="w-full lg:w-1/2 mt-6 lg:mt-0">
+                <h1 class="text-2xl font-bold text-gray-800 mb-4">{{ product.title }}</h1>
+                <p class="text-gray-700 text-lg mb-4">
+                    <span class="font-semibold">Description : </span>{{ product.description }}
+                </p>
+                <p class="text-gray-700 text-lg mb-4">
+                    <span class="font-semibold">Prix : </span>{{ product.price }} €
+                </p>
+                <p class="text-gray-700 text-lg mb-4">
+                    <span class="font-semibold">Posté par : </span>{{ product.user.username }}
+                </p>
+                <p class="text-gray-700 text-lg mb-4">
+                    <span class="font-semibold">Vues : </span>{{ product.views }}
+                </p>
+
+                <a href="{{ path('app_product_list') }}"
+                   class="inline-block bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-blue-700 transition duration-200">
+                    Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

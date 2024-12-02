@@ -159,4 +159,18 @@ class ProductController extends AbstractController
 
         return $this->redirectToRoute('app_product_list');
     }
+
+    #[Route('/product/{id}', name: 'product_show')]
+    public function show(int $id,ProductRepository $productRepository):Response
+    {
+        $product = $productRepository->find($id);
+
+        if(!$product){
+            return $this->redirectToRoute('app_product_list');
+        }
+
+        return $this->render('product/show.html.twig',[
+            'product' => $product,
+        ]);
+    }
 }

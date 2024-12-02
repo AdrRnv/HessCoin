@@ -7,6 +7,7 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
@@ -60,6 +61,10 @@ class Product
 
     #[ORM\Column(type: 'integer')]
     private ?int $likesCount = 0;
+
+    #[ORM\Column(type:'integer')]
+    private ?int $views = 0;
+
     public function getTitle(): string
     {
         return $this->title;
@@ -181,6 +186,13 @@ class Product
         $this->likesCount = $likesCount;
     }
 
+    public function getViews(): ?int
+    {
+        return $this->views;
+    }
 
-
+    public function setViews(?int $views): void
+    {
+        $this->views = $views;
+    }
 }
