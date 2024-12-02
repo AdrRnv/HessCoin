@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Cart;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,6 +28,10 @@ class RegistrationController extends AbstractController
 
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
+            $cart = new Cart();
+            $cart->setUser($user);
+
+            $entityManager->persist($cart);
             $entityManager->persist($user);
             $entityManager->flush();
 

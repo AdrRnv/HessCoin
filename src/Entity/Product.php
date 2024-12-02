@@ -39,6 +39,9 @@ class Product
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private string $postalCode;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -129,6 +132,16 @@ class Product
     public function setUser(User $user): void
     {
         $this->user = $user;
+    }
+
+    public function getPostalCode(): string
+    {
+        return $this->postalCode;
+    }
+
+    public function setPostalCode(string $postalCode): void
+    {
+        $this->postalCode = $postalCode;
     }
 
 }

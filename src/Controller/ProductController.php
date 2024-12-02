@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Cart;
+use App\Entity\CartProduct;
 use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\User;
@@ -11,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/product')]
 class ProductController extends AbstractController
@@ -39,7 +42,7 @@ class ProductController extends AbstractController
         $productsByCategory = [];
 
         foreach ($categories as $category) {
-            if (!empty($categoryFilter) && $category->getId() != $categoryFilter) {
+            if (!empty($categoryFilter) && $category->getName() != $categoryFilter) {
                 continue;
             }
 
@@ -65,6 +68,7 @@ class ProductController extends AbstractController
 
 
 
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/add', name: 'app_product_add')]
     #[Route('/edit/{id}', name: 'app_product_edit')]
     public function add(Request $request, ?int $id): Response
@@ -93,11 +97,31 @@ class ProductController extends AbstractController
         ]);
     }
 
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/delete/{id}', name: 'app_product_delete')]
     public function delete(Request $request, int $id): Response
     {
         $product = $this->entityManager->getRepository(Product::class)->find($id);
         $this->entityManager->remove($product);
+        $this->entityManager->flush();
+        return $this->redirectToRoute('app_product_list');
+    }
+
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[Route('/cart/{id}', name: 'app_product_delete')]
+    public function addToCart(Request $request, int $id): Response
+    {
+        $product = $this->entityManager->getRepository(Product::class)->find($id);
+
+        $cart = $this->entityManager->getRepository(Cart::class)->findOneBy(['user' => $this->getUser()]);
+
+        $cartProduct = new CartProduct();
+        $cartProduct->setCart($cart);
+        $cartProduct->setQuantity(1);
+        $cartProduct->setProducts($product);
+
+        $this->entityManager->persist($cartProduct);
+
         $this->entityManager->flush();
         return $this->redirectToRoute('app_product_list');
     }

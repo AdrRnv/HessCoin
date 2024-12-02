@@ -4,22 +4,12 @@
 
 {% block body %}
     <form method="get" action="{{ path('app_product_list') }}">
-        <!-- Champ de recherche -->
-        <input
-                type="text"
-                name="search"
-                placeholder="Search products..."
-                value="{{ search|e }}"
-                class="border rounded p-2"
-        />
-
-        <!-- Filtre par catégorie -->
         <select name="category" class="border rounded p-2">
             <option value="">All Categories</option>
             {% for category in categories %}
                 <option
-                        value="{{ category.id }}"
-                        {% if category.id == categoryFilter %}selected{% endif %}
+                        value="{{ category.name }}"
+                        {% if category.name == categoryFilter %}selected{% endif %}
                 >
                     {{ category.name }}
                 </option>
@@ -42,7 +32,7 @@
                             <div class="relative flex items-end justify-end h-56 w-full">
                                 <img src="{{ product.imageName }}" alt="Product Image"
                                      class="absolute inset-0 h-full w-full object-cover">
-                                <button class="p-2 rounded-full bg-blue-600 text-white mx-5 -mb-4 hover:bg-blue-500 focus:outline-none focus:bg-blue-500 relative">
+                                <button onclick="window.location.href='/cart/add/product/{{ product.id }}';" class="p-2 rounded-full bg-blue-600 text-white mx-5 -mb-4 hover:bg-blue-500 focus:outline-none focus:bg-blue-500 relative">
                                     <svg class="h-5 w-5" fill="none" stroke-linecap="round" stroke-linejoin="round"
                                          stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                                         <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
