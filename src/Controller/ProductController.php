@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Cart;
+use App\Entity\CartProduct;
 use App\Entity\Category;
+use App\Entity\Favorite;
 use App\Entity\Product;
 use App\Entity\User;
 use App\Form\ProductType;
