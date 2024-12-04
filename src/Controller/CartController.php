@@ -54,6 +54,7 @@ class CartController extends AbstractController
 
         $cartProduct = new CartProduct();
         $cartProduct->setCart($cart);
+        $cartProduct->setProduct($product);
 
         $this->entityManager->persist($cartProduct);
         $this->entityManager->flush();
