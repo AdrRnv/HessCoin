@@ -19,27 +19,14 @@ class CartProduct
     #[ORM\JoinColumn(nullable: false)]
     private Product $product;
 
-    #[ORM\Column]
-    private int $quantity;
-
-    public function getQuantity(): int
-    {
-        return $this->quantity;
-    }
-
-    public function setQuantity(int $quantity): void
-    {
-        $this->quantity = $quantity;
-    }
-
     public function getProduct(): Product
     {
         return $this->product;
     }
 
-    public function setProducts(Product $products): void
+    public function setProduct(Product $product): void
     {
-        $this->products = $products;
+        $this->product = $product;
     }
 
     public function getCart(): Cart

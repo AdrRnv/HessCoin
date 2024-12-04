@@ -114,7 +114,7 @@ class ProductController extends AbstractController
 
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/delete/{id}', name: 'app_product_delete')]
-    public function delete(Request $request, int $id): Response
+    public function delete(int $id): Response
     {
         $product = $this->entityManager->getRepository(Product::class)->find($id);
         $this->entityManager->remove($product);
@@ -132,8 +132,7 @@ class ProductController extends AbstractController
 
         $cartProduct = new CartProduct();
         $cartProduct->setCart($cart);
-        $cartProduct->setQuantity(1);
-        $cartProduct->setProducts($product);
+        $cartProduct->setProduct($product);
 
         $this->entityManager->persist($cartProduct);
 
