@@ -17,7 +17,7 @@ class CartProduct
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'cartProduct')]
     #[ORM\JoinColumn(nullable: false)]
-    private Product $products;
+    private Product $product;
 
     #[ORM\Column]
     private int $quantity;
@@ -32,9 +32,9 @@ class CartProduct
         $this->quantity = $quantity;
     }
 
-    public function getProducts(): Product
+    public function getProduct(): Product
     {
-        return $this->products;
+        return $this->product;
     }
 
     public function setProducts(Product $products): void
