@@ -26,9 +26,9 @@ class Product
     #[ORM\Column]
     private float $price;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'products')]
-    #[ORM\JoinTable(name: 'product_categories')]
-    private Collection $categories;
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
+    #[ORM\JoinTable(name: 'product_category')]
+    private Category $category;
 
     #[Vich\UploadableField(mapping: 'product_images', fileNameProperty: 'imageName')]
     private ?File $imageFile = null;
@@ -41,7 +41,7 @@ class Product
     private User $user;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    private string $postalCode;
+    private string $postalCode = '';
 
     #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'product', orphanRemoval: true)]
     private Collection $favorites;
@@ -54,7 +54,6 @@ class Product
 
     public function __construct()
     {
-        $this->categories = new ArrayCollection();
         $this->favorites = new ArrayCollection();
     }
 
@@ -94,25 +93,14 @@ class Product
         return $this;
     }
 
-    public function getCategories(): Collection
+    public function getCategory(): Category
     {
-        return $this->categories;
+        return $this->category;
     }
 
-    public function addCategory(Category $category): static
+    public function setCategory(Category $category): void
     {
-        if (!$this->categories->contains($category)) {
-            $this->categories[] = $category;
-        }
-
-        return $this;
-    }
-
-    public function removeCategory(Category $category): static
-    {
-        $this->categories->removeElement($category);
-
-        return $this;
+        $this->category = $category;
     }
 
     public function getImageFile(): ?File

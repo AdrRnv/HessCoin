@@ -62,7 +62,8 @@ class AdminController extends AbstractController
                 $newProduct->setPrice($product['price']);
                 $newProduct->setImageName($product['thumbnail']);
                 $newProduct->setUser($apiUser);
-                $newProduct->addCategory($category);
+                $newProduct->setCategory($category);
+                $newProduct->setPostalCode('01000');
                 $entityManager->persist($newProduct);
                 $entityManager->flush();
             }

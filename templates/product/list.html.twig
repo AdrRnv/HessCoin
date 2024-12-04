@@ -16,6 +16,9 @@
             {% endfor %}
         </select>
 
+        <input type="hidden" name="search" value="{{ search|e }}">
+        <input type="hidden" name="location" value="{{ locationFilter }}">
+
         <button type="submit" class="bg-blue-500 text-white p-2 rounded">Filter</button>
     </form>
     <div class="flex flex-col sm:flex-row">

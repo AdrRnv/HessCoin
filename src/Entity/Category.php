@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Entity\Traits\IdTrait;
 use App\Repository\CategoryRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -19,19 +17,11 @@ class Category
     #[ORM\Column(length: 255)]
     private string $name;
 
-    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'categories')]
-    private Collection $products;
-
     #[Vich\UploadableField(mapping: 'category_images', fileNameProperty: 'imageName')]
     private ?File $imageFile = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $imageName = null;
-
-    public function __construct()
-    {
-        $this->products = new ArrayCollection();
-    }
 
     public function getName(): ?string
     {
@@ -43,11 +33,6 @@ class Category
         $this->name = $name;
 
         return $this;
-    }
-
-    public function getProducts(): Collection
-    {
-        return $this->products;
     }
 
     public function getImageFile(): ?File

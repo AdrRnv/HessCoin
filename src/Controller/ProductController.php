@@ -38,7 +38,6 @@ class ProductController extends AbstractController
     #[Route('/list', name: 'app_product_list')]
     public function list(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $products = $entityManager->getRepository(Product::class)->findAll();
         $user = $this->getUser();
 
         $favoriteProductIds = [];
@@ -51,34 +50,36 @@ class ProductController extends AbstractController
         }
         $search = $request->query->get('search', '');
         $categoryFilter = $request->query->get('category', '');
+        $locationFilter = '';
+
+        $session = $request->getSession();
+        if ($session->has('postalCode')) {
+            $locationFilter = $session->get('postalCode');
+        }
 
         $categories = $entityManager->getRepository(Category::class)->findAll();
+
+        $filteredProducts = $this->entityManager->getRepository(Product::class)->findFilteredProducts($search, $categoryFilter, $locationFilter);
         $productsByCategory = [];
 
         foreach ($categories as $category) {
-            if (!empty($categoryFilter) && $category->getName() != $categoryFilter) {
-                continue;
-            }
+            $filteredCategoryProducts = array_filter($filteredProducts, function ($product) use ($category) {
+                return $product->getCategory() === $category;
+            });
 
-            $filteredProducts = [];
-            foreach ($category->getProducts() as $product) {
-                if (empty($search) || stripos($product->getTitle(), $search) !== false) {
-                    $filteredProducts[] = $product;
-                }
-            }
-
-            if (count($filteredProducts) > 0) {
-                $productsByCategory[$category->getName()] = $filteredProducts;
+            if (count($filteredCategoryProducts) > 0) {
+                $productsByCategory[$category->getName()] = $filteredCategoryProducts;
             }
         }
 
         return $this->render('product/list.html.twig', [
-            'products' => $products,
+            'products' => $filteredProducts,
             'favoriteProductIds' => $favoriteProductIds,
             'productsByCategory' => $productsByCategory,
             'categories' => $categories,
             'search' => $search,
             'categoryFilter' => $categoryFilter,
+            'locationFilter' => $locationFilter,
         ]);
     }
 

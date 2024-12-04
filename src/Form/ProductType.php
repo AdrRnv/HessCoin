@@ -36,6 +36,14 @@ class ProductType extends AbstractType
                 'expanded' => false, // false pour une liste déroulante
                 'label' => 'Catégories',
             ])
+            ->add('postalCode', TextType::class, [
+                'label' => 'Postal Code',
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Enter postal code',
+                ],
+            ])
             ->add('imageFile', VichFileType::class, [
                 'label' => 'Exercise Image',
                 'required' => false,
