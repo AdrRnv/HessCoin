@@ -157,6 +157,9 @@ class ProductController extends AbstractController
         $favorite->setUser($user);
         $favorite->setProduct($product);
 
+        $product->getCategory()->setTotalLikes($product->getCategory()->getTotalLikes() + 1);
+
+        $entityManager->persist($product);
         $entityManager->persist($favorite);
         $product->setLikesCount($product->getLikesCount() + 1);
         $entityManager->flush();
@@ -179,8 +182,9 @@ class ProductController extends AbstractController
 
         if ($favorite) {
             $entityManager->remove($favorite);
-            $entityManager->flush();
             $product->setLikesCount($product->getLikesCount() - 1);
+            $product->getCategory()->setTotalLikes($product->getCategory()->getTotalLikes() - 1);
+            $entityManager->persist($product);
             $entityManager->flush();
         }
 

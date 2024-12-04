@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Entity\Traits\IdTrait;
 use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -22,6 +24,17 @@ class Category
 
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $imageName = null;
+
+    #[ORM\Column(type: 'integer')]
+    private ?int $totalLikes = 0;
+
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'category', cascade: ['persist', 'remove'])]
+    private Collection $products;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
 
     public function getName(): ?string
     {
@@ -55,5 +68,24 @@ class Category
         $this->imageName = $imageName;
     }
 
+    public function getTotalLikes(): ?int
+    {
+        return $this->totalLikes;
+    }
+
+    public function setTotalLikes(?int $totalLikes): void
+    {
+        $this->totalLikes = $totalLikes;
+    }
+
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function setProducts(Collection $products): void
+    {
+        $this->products = $products;
+    }
 
 }
