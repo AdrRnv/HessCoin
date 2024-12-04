@@ -2,6 +2,8 @@ twig:
     file_name_pattern: '*.twig'
     globals:
       search: ''
+      location: ''
+      category: ''
 
 when@test:
     twig:
