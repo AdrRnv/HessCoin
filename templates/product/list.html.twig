@@ -43,6 +43,19 @@
                             <div class="px-5 py-3">
                                 <h3 class="text-gray-700 uppercase">{{ product.title }}</h3>
                                 <span class="text-gray-500 mt-2">{{ product.price }} €</span>
+                                {% if app.user %}
+                                    {% set isFavorite = product.id in favoriteProductIds %}
+                                    <form action="{{ path(isFavorite ? 'remove_favorite' : 'add_favorite', {'id': product.id}) }}" method="POST">
+                                        <button type="submit" class="mt-4 inline-block text-blue-600 hover:text-blue-500">
+                                            {% if isFavorite %}
+                                                Enlever des favoris
+                                            {% else %}
+                                                Ajouter aux favoris
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                <a href="{{ path('product_show',{ id: product.id }) }}" class="mt-4 inline-block text-blue-600 hover:text-blue-500">Voir plus</a>
                             </div>
                         </div>
                     {% endfor %}
