@@ -30,9 +30,7 @@ class ProductController extends AbstractController
     #[Route('/', name: 'app_product_index')]
     public function index(): Response
     {
-        return $this->render('product/index.html.twig', [
-            'controller_name' => 'ProductController',
-        ]);
+        return $this->redirectToRoute('app_product_list');
     }
 
     #[Route('/list', name: 'app_product_list')]

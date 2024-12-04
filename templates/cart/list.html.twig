@@ -10,12 +10,12 @@
                 {% for cartProduct in cartProducts %}
                     <div class="w-full max-w-sm mx-auto rounded-md shadow-md overflow-hidden">
                         <div class="relative flex items-end justify-end h-56 w-full">
-                            <img src="{{ cartProduct.products.imageName }}" alt="Product Image"
+                            <img src="{{ cartProduct.product.imageName }}" alt="Product Image"
                                  class="absolute inset-0 h-full w-full object-cover">
                         </div>
                         <div class="px-5 py-3">
-                            <h3 class="text-gray-700 uppercase">{{ cartProduct.products.title }}</h3>
-                            <span class="text-gray-500 mt-2">{{ cartProduct.products.price }} €</span>
+                            <h3 class="text-gray-700 uppercase">{{ cartProduct.product.title }}</h3>
+                            <span class="text-gray-500 mt-2">{{ cartProduct.product.price }} €</span>
                         </div>
                     </div>
                 {% endfor %}
