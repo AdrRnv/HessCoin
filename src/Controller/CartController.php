@@ -72,4 +72,10 @@ class CartController extends AbstractController
         $this->entityManager->flush();
         return $this->redirectToRoute('app_cart_list');
     }
+
+    #[Route('/order', name: 'app_cart_order')]
+    public function order(Request $request, EntityManagerInterface $entityManager)
+    {
+        $user = $this->getUser();
+    }
 }
