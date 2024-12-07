@@ -20,7 +20,7 @@ class Cart
     #[ORM\Column]
     private float $totalPrice = 0;
 
-    #[ORM\OneToMany(targetEntity: CartProduct::class, mappedBy: 'carts')]
+    #[ORM\OneToMany(targetEntity: CartProduct::class, mappedBy: 'cart', cascade: ['persist', 'remove'])]
     private Collection $cartProducts;
 
     public function __construct()

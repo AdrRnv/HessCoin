@@ -36,11 +36,23 @@ class CartController extends AbstractController
     public function list(EntityManagerInterface $entityManager, Request $request): Response
     {
         $user = $this->getUser();
-        $cart = $entityManager->getRepository(Cart::class)->findBy(['user' => $user]);
+        $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
+
+        if (!$cart) {
+            $this->addFlash('error', 'Panier introuvable');
+            return $this->redirectToRoute('app_product_list');
+        }
+
         $cartProducts = $entityManager->getRepository(CartProduct::class)->findBy(['cart' => $cart]);
+
+
+        $totalPrice = array_reduce($cartProducts, function ($sum, CartProduct $cartProduct) {
+            return $sum + $cartProduct->getProduct()->getPrice();
+        }, 0);
 
         return $this->render('cart/list.html.twig', [
             'cartProducts' => $cartProducts,
+            'totalPrice' => $totalPrice,
         ]);
     }
 
@@ -50,15 +62,34 @@ class CartController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $product = $this->entityManager->getRepository(Product::class)->find($id);
+        if(!$product){
+            $this->addFlash('error','Produit introuvable');
+            return $this->redirectToRoute('app_product_list');
+        }
+
         $cart = $this->entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
 
-        $cartProduct = new CartProduct();
-        $cartProduct->setCart($cart);
-        $cartProduct->setProduct($product);
+        if(!$cart){
+            $this->addFlash('error','Panier introuvable');
+            return $this->redirectToRoute('app_product_list');
+        }
 
-        $this->entityManager->persist($cartProduct);
-        $this->entityManager->flush();
+        $productExist = $this->entityManager->getRepository(CartProduct::class)->findOneBy([
+            'cart' => $cart->getId(),
+            'product' => $product->getId()
+            ]);
+        if($productExist){
+            $this->addFlash('error','Ce produit est déjà dans le panier');
+        }else{
+            $cartProduct = new CartProduct();
+            $cartProduct->setProduct($product);
+            $cartProduct->setCart($cart);
+            $product->setStatus(Product::STATUS_INAVALAIBLE);
+            $this->entityManager->persist($cartProduct);
+            $this->entityManager->flush();
 
+            $this->addFlash('succes',"Produit ajouté au panier avec succès.");
+        }
         return $this->redirectToRoute('app_product_list');
     }
 
@@ -75,5 +106,58 @@ class CartController extends AbstractController
     public function order(Request $request, EntityManagerInterface $entityManager)
     {
         $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
+
+        if (!$cart) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        /** @var CartProduct[] $cartProducts */
+        $cartProducts = $entityManager->getRepository(CartProduct::class)->findBy(['cart' => $cart]);
+
+        // Vérifier si des produits existent dans le panier
+        if (empty($cartProducts)) {
+            $this->addFlash('error', 'Votre panier est vide.');
+            return $this->redirectToRoute('app_cart');
+        }
+
+        foreach ($cartProducts as $cartProduct) {
+            /** @var Product $product */
+            $product = $cartProduct->getProduct();
+            $product->setStatus(Product::STATUS_SELL);
+            $entityManager->persist($product);
+        }
+
+        $entityManager->flush();
+        $this->addFlash('success', 'Votre commande a été bien enregistrée.');
+        return $this->redirectToRoute('app_product_list');
+    }
+
+    #[Route('/delete-cartproduct/{product_id}', name: 'app_cart_delete')]
+    public function deleteProduct(Request $request, $product_id, EntityManagerInterface $entityManager){
+        $user = $this->getUser();
+        $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
+
+        if (!$cart) {
+            return $this->redirectToRoute('app_home');
+        }
+        $cartProduct = $entityManager->getRepository(CartProduct::class)
+            ->findOneBy(['cart' => $cart, 'product' => $product_id]);
+
+        if ($cartProduct) {
+            $entityManager->remove($cartProduct);
+            $product = $this->entityManager->getRepository(Product::class)->find($product_id);
+            $product->setStatus(Product::STATUS_AVAILABLE);
+            $this->entityManager->persist($product);
+            $this->entityManager->flush();
+            return $this->redirectToRoute('app_cart_list');
+        } else {
+            $this->addFlash('error', 'Produit non trouvé dans le panier.');
+            return $this->redirectToRoute('app_cart_list');
+        }
     }
 }

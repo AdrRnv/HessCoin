@@ -16,6 +16,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Product
 {
     CONST STATUS_AVAILABLE = 0;
+    CONST STATUS_INAVALAIBLE = 2;
     CONST STATUS_SELL = 1;
     use IdTrait;
 

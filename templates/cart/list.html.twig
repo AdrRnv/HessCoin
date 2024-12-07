@@ -17,11 +17,24 @@
                             <h3 class="text-gray-700 uppercase">{{ cartProduct.product.title }}</h3>
                             <span class="text-gray-500 mt-2">{{ cartProduct.product.price }} €</span>
                         </div>
+                        <form action="{{ path('app_cart_delete', {'product_id': cartProduct.product.id}) }}" method="POST">
+                            <button type="submit" class="mt-4 inline-block text-blue-600 hover:text-blue-500">
+                                Enlever du panier
+                            </button>
+                        </form>
                     </div>
                 {% endfor %}
             </div>
         </div>
-        <div class="flex justify-center">
+        {% if cartProducts is not empty %}
+            <div class="flex justify-between items-center mt-8 font-bold text-xl border-t pt-4">
+                <span class="text-gray-700">Total du panier :</span>
+                <span class="text-gray-700">{{ totalPrice|number_format(2, ',', ' ') }} €</span>
+            </div>
+        {% else %}
+            <p class="text-center text-gray-500 mt-4">Votre panier est vide.</p>
+        {% endif %}
+        <div class="flex justify-center mt-6">
             <a href="{{ path('app_cart_order') }}">
                 <button class="bg-blue-500 hover:bg-blue-700 text-blue font-bold py-2 px-4 rounded">
                     Commander

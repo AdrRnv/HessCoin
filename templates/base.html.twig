@@ -17,6 +17,15 @@
 <body class="leading-normal tracking-normal text-indigo-400 m-6 bg-cover bg-fixed"
       style="background-color: white;">
 {% include 'layouts/header.html.twig' %}
-{% block body %}{% endblock %}
+{% block body %}
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type }} mt-4">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+{% endblock %}
 </body>
 </html>
