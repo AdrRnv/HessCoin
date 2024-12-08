@@ -1,19 +1,44 @@
-<h1>Historique des achats</h1>
-{% if purchases is empty %}
-    <p>Aucune commande trouvée.</p>
-{% else %}
-    <ul>
-        {% for purchase in purchases %}
-            <li>
-                Commande passée le {{ purchase.createdAt|date('d/m/Y H:i') }}
-                <ul>
-                    {% for purchaseProduct in purchase.purchaseProducts %}
-                        <li>
-                            Produit : {{ purchaseProduct.product.title }} - {{ purchaseProduct.price }} €
-                        </li>
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des achats{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-6 py-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-8">Historique des achats</h1>
+
+        {% if purchases is empty %}
+            <p class="text-gray-500">Aucune commande trouvée.</p>
+        {% else %}
+            <div class="space-y-8">
+                {% for purchase in purchases %}
+                    <div class="bg-white shadow-lg rounded-xl p-6 transition-transform transform hover:scale-105">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-lg font-semibold text-gray-800">Commande passée le {{ purchase.createdAt|date('d/m/Y H:i') }}</span>
+                            <button class="text-indigo-600 hover:underline focus:outline-none"
+                                    onclick="toggleDetails('{{ purchase.id }}')">Voir les produits
+                            </button>
+                        </div>
+
+                        <div id="products-{{ purchase.id }}" class="hidden">
+                            <ul class="space-y-4">
+                                {% for purchaseProduct in purchase.purchaseProducts %}
+                                    <li class="flex justify-between items-center p-4 bg-gray-50 rounded-lg shadow-sm">
+                                        <div class="text-gray-700 font-medium">{{ purchaseProduct.product.title }}</div>
+                                        <div class="text-gray-500">{{ purchaseProduct.price }} €</div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleDetails(purchaseId) {
+            const productList = document.getElementById(`products-${purchaseId}`);
+            productList.classList.toggle('hidden');
+        }
+    </script>
+{% endblock %}
