@@ -26,10 +26,10 @@ class LocationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $postalCode = $data['postalCode'];
+            $location = $data['location'];
 
             $session = $this->requestStack->getSession();
-            $session->set('postalCode', $postalCode);
+            $session->set('location', $location);
 
             $this->addFlash('success', 'Postal code saved successfully!');
 

@@ -29,11 +29,11 @@ class ProductType extends AbstractType
             ->add('price', NumberType::class, [
                 'label' => 'Prix',
             ])
-            ->add('categories', EntityType::class, [
+            ->add('category', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'name',
-                'multiple' => true,
-                'expanded' => false, // false pour une liste déroulante
+                'multiple' => false,
+                'expanded' => false,
                 'label' => 'Catégories',
             ])
             ->add('postalCode', TextType::class, [

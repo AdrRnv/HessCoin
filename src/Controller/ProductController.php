@@ -42,18 +42,13 @@ class ProductController extends AbstractController
         if ($user) {
             $userFavorites = $entityManager->getRepository(Favorite::class)->findBy(['user' => $user]);
 
-            $favoriteProductIds = array_map(function ($favorite) {
-                return $favorite->getProduct()->getId();
+            $favoriteProductIds = array_map(static function ($favorite) {
+                return $favorite->getProduct()?->getId();
             }, $userFavorites);
         }
-        $search = $request->query->get('search', '');
-        $categoryFilter = $request->query->get('category', '');
-        $locationFilter = '';
-
-        $session = $request->getSession();
-        if ($session->has('postalCode')) {
-            $locationFilter = $session->get('postalCode');
-        }
+        $search = $request->query->get('search');
+        $categoryFilter = $request->query->get('category');
+        $locationFilter = $request->getSession()->get('location');
 
         $categories = $entityManager->getRepository(Category::class)->findAll();
 
@@ -80,7 +75,6 @@ class ProductController extends AbstractController
             'locationFilter' => $locationFilter,
         ]);
     }
-
 
 
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -124,10 +118,9 @@ class ProductController extends AbstractController
 
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/cart/{id}', name: 'app_product_delete')]
-    public function addToCart(Request $request, int $id): Response
+    public function addToCart(int $id): Response
     {
         $product = $this->entityManager->getRepository(Product::class)->find($id);
-
         $cart = $this->entityManager->getRepository(Cart::class)->findOneBy(['user' => $this->getUser()]);
 
         $cartProduct = new CartProduct();
@@ -189,17 +182,29 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}', name: 'product_show')]
-    public function show(int $id,ProductRepository $productRepository,EntityManagerInterface $entityManager):Response
+    public function show(int $id, ProductRepository $productRepository, EntityManagerInterface $entityManager): Response
     {
         $product = $productRepository->find($id);
 
-        if(!$product){
+        if (!$product) {
             return $this->redirectToRoute('app_product_list');
         }
         $product->setViews($product->getViews() + 1);
         $entityManager->flush();;
-        return $this->render('product/show.html.twig',[
+        return $this->render('product/show.html.twig', [
             'product' => $product,
+        ]);
+    }
+
+    #[Route('/user/list', name: 'product_user_list')]
+    public function userList(ProductRepository $productRepository, EntityManagerInterface $entityManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $products = $productRepository->findBy(['user' => $user]);
+
+        return $this->render('login/login.html.twig', [
+            'products' => $products,
         ]);
     }
 }

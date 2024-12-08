@@ -84,7 +84,6 @@ class CartController extends AbstractController
             $cartProduct = new CartProduct();
             $cartProduct->setProduct($product);
             $cartProduct->setCart($cart);
-            $product->setStatus(Product::STATUS_INAVALAIBLE);
             $this->entityManager->persist($cartProduct);
             $this->entityManager->flush();
 

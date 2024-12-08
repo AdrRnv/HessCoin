@@ -13,7 +13,7 @@ class LocationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('postalCode', TextType::class, [
+            ->add('location', TextType::class, [
                 'label' => 'Enter your postal code',
                 'required' => true,
                 'attr' => [

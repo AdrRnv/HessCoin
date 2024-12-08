@@ -15,9 +15,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
-    CONST STATUS_AVAILABLE = 0;
-    CONST STATUS_INAVALAIBLE = 2;
-    CONST STATUS_SELL = 1;
+    public const STATUS_AVAILABLE = 0;
+    public const STATUS_SELL = 1;
+
     use IdTrait;
 
     #[ORM\Column(length: 255)]
@@ -52,10 +52,10 @@ class Product
     #[ORM\Column(type: 'integer')]
     private ?int $likesCount = 0;
 
-    #[ORM\Column(type:'integer')]
+    #[ORM\Column(type: 'integer')]
     private ?int $views = 0;
 
-    #[ORM\Column(type:'integer')]
+    #[ORM\Column(type: 'integer')]
     private ?int $status = 0;
 
     public function __construct()

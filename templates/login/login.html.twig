@@ -13,9 +13,42 @@
                             You are logged in as {{ app.user.userIdentifier }}.
                         </div>
                         <div class="mt-4 text-center">
-                            <a href="{{ path('app_logout') }}" class="text-blue-600 hover:underline"><button type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Logout</button></a>
+                            <a href="{{ path('app_logout') }}">
+                                <button type="button"
+                                        class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                                    Logout
+                                </button>
+                            </a>
                         </div>
 
+                        <a href="{{ path('app_product_add') }}">
+                            <button type="button"
+                                    class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                                Add Product
+                            </button>
+                        </a>
+
+                        {% for product in products %}
+                            <div class="w-full max-w-sm mx-auto rounded-md shadow-md overflow-hidden">
+                                <div class="relative flex items-end justify-end h-56 w-full">
+                                    <img src="{{ product.imageName }}" alt="Product Image"
+                                         class="absolute inset-0 h-full w-full object-cover">
+                                    <button onclick="window.location.href='/cart/add/product/{{ product.id }}';"
+                                            class="p-2 rounded-full bg-blue-600 text-white mx-5 -mb-4 hover:bg-blue-500 focus:outline-none focus:bg-blue-500 relative">
+                                        <svg class="h-5 w-5" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                                             stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="px-5 py-3">
+                                    <h3 class="text-gray-700 uppercase">{{ product.title }}</h3>
+                                    <span class="text-gray-500 mt-2">{{ product.price }} €</span>
+                                    <a href="{{ path('product_show',{ id: product.id }) }}"
+                                       class="mt-4 inline-block text-blue-600 hover:text-blue-500">Voir plus</a>
+                                </div>
+                            </div>
+                        {% endfor %}
                     {% else %}
                         <h2 class="text-2xl text-center font-bold text-gray-700">Log in</h2>
 
@@ -26,19 +59,28 @@
                         <form method="post" class="mt-6">
                             <div class="mt-4">
                                 <label class="block text-gray-700">Email Address</label>
-                                <input type="email" value="{{ last_username }}" name="_username" id="username" class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600" autocomplete="email" required autofocus>
+                                <input type="email" value="{{ last_username }}" name="_username" id="username"
+                                       class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                       autocomplete="email" required autofocus>
                             </div>
 
                             <div class="mt-4">
                                 <label class="block text-gray-700">Password</label>
-                                <input type="password" name="_password" id="password" class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600" autocomplete="current-password" required>
+                                <input type="password" name="_password" id="password"
+                                       class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                       autocomplete="current-password" required>
                             </div>
 
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-                            <div class="flex items-center justify-between mt-6">
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white text-sm uppercase font-medium rounded hover:bg-blue-500 focus:outline-none focus:bg-blue-500">
+                            <div class="flex items-center left mt-6">
+                                <button type="submit"
+                                        class="px-4 py-2 bg-blue-600 text-white text-sm uppercase font-medium rounded hover:bg-blue-500 focus:outline-none focus:bg-blue-500">
                                     Sign in
+                                </button>
+                                <button onclick="window.location.href='/register'" type="submit"
+                                        class="mx-2 px-4 py-2 bg-blue-600 text-white text-sm uppercase font-medium rounded hover:bg-blue-500 focus:outline-none focus:bg-blue-500">
+                                    Register
                                 </button>
                             </div>
                         </form>
