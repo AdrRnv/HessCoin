@@ -5,7 +5,11 @@ namespace App\Controller;
 use App\Entity\Cart;
 use App\Entity\CartProduct;
 use App\Entity\Product;
+use App\Entity\Purchase;
+use App\Entity\PurchaseProduct;
 use App\Entity\User;
+use App\Entity\Order;
+use App\Entity\OrderProduct;
 use App\Form\ProductType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -101,40 +105,41 @@ class CartController extends AbstractController
         return $this->redirectToRoute('app_cart_list');
     }
 
-    #[Route('/order', name: 'app_cart_order')]
-    public function order(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/order', name: 'app_order')]
+    public function createOrder(EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
         $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
 
-        if (!$cart) {
-            return $this->redirectToRoute('app_home');
-        }
-
-        /** @var CartProduct[] $cartProducts */
-        $cartProducts = $entityManager->getRepository(CartProduct::class)->findBy(['cart' => $cart]);
-
-        // Vérifier si des produits existent dans le panier
-        if (empty($cartProducts)) {
+        if (!$cart || $cart->getCartProducts()->isEmpty()) {
             $this->addFlash('error', 'Votre panier est vide.');
-            return $this->redirectToRoute('app_cart');
+            return $this->redirectToRoute('app_cart_list');
         }
 
-        foreach ($cartProducts as $cartProduct) {
+        $purchase = new Purchase();
+        $purchase->setBuyer($user);
+
+        foreach ($cart->getCartProducts() as $cartProduct) {
             /** @var Product $product */
             $product = $cartProduct->getProduct();
+
+            $purchaseProduct = new PurchaseProduct($purchase, $product, $product->getPrice());
             $product->setStatus(Product::STATUS_SELL);
             $entityManager->persist($product);
+            $entityManager->persist($purchaseProduct);
+
+            $entityManager->remove($cartProduct);
         }
 
+        $entityManager->persist($purchase);
         $entityManager->flush();
-        $this->addFlash('success', 'Votre commande a été bien enregistrée.');
-        return $this->redirectToRoute('app_product_list');
+
+        $this->addFlash('success', 'Votre commande a été enregistrée.');
+        return $this->redirectToRoute('app_order_history');
     }
+
+
+
 
     #[Route('/delete-cartproduct/{product_id}', name: 'app_cart_delete')]
     public function deleteProduct(Request $request, $product_id, EntityManagerInterface $entityManager){
@@ -158,5 +163,16 @@ class CartController extends AbstractController
             $this->addFlash('error', 'Produit non trouvé dans le panier.');
             return $this->redirectToRoute('app_cart_list');
         }
+    }
+
+    #[Route('/order/history', name: 'app_order_history')]
+    public function purchaseHistory(EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $purchases = $entityManager->getRepository(Purchase::class)->findBy(['buyer' => $user], ['createdAt' => 'DESC']);
+
+        return $this->render('purchase/history.html.twig', [
+            'purchases' => $purchases,
+        ]);
     }
 }

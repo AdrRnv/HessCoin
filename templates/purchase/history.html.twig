@@ -1,0 +1,19 @@
+<h1>Historique des achats</h1>
+{% if purchases is empty %}
+    <p>Aucune commande trouvée.</p>
+{% else %}
+    <ul>
+        {% for purchase in purchases %}
+            <li>
+                Commande passée le {{ purchase.createdAt|date('d/m/Y H:i') }}
+                <ul>
+                    {% for purchaseProduct in purchase.purchaseProducts %}
+                        <li>
+                            Produit : {{ purchaseProduct.product.title }} - {{ purchaseProduct.price }} €
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
