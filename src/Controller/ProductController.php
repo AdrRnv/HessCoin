@@ -49,10 +49,15 @@ class ProductController extends AbstractController
         $search = $request->query->get('search');
         $categoryFilter = $request->query->get('category');
         $locationFilter = $request->getSession()->get('location');
+        $minPrice = $request->query->get('min_price');
+        $maxPrice = $request->query->get('max_price');
 
         $categories = $entityManager->getRepository(Category::class)->findAll();
 
-        $filteredProducts = $this->entityManager->getRepository(Product::class)->findFilteredProducts($search, $categoryFilter, $locationFilter);
+        $minPrice = $minPrice !== null ? (float) $minPrice : null;
+        $maxPrice = $maxPrice !== null ? (float) $maxPrice : null;
+
+        $filteredProducts = $this->entityManager->getRepository(Product::class)->findFilteredProducts($search, $categoryFilter, $locationFilter, $minPrice, $maxPrice);
         $productsByCategory = [];
 
         foreach ($categories as $category) {
@@ -73,6 +78,8 @@ class ProductController extends AbstractController
             'search' => $search,
             'categoryFilter' => $categoryFilter,
             'locationFilter' => $locationFilter,
+            'minPrice' => $minPrice,
+            'maxPrice' => $maxPrice,
         ]);
     }
 
@@ -133,7 +140,8 @@ class ProductController extends AbstractController
         return $this->redirectToRoute('app_product_list');
     }
 
-    #[Route('/product/{id}/add_favorite', name: 'add_favorite')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[Route('/{id}/add_favorite', name: 'add_favorite')]
     public function addFavorite(int $id, ProductRepository $productRepository, EntityManagerInterface $entityManager): Response
     {
         $product = $productRepository->find($id);
@@ -157,7 +165,8 @@ class ProductController extends AbstractController
         return $this->redirectToRoute('app_product_list');
     }
 
-    #[Route('/product/{id}/remove_favorite', name: 'remove_favorite')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[Route('/{id}/remove_favorite', name: 'remove_favorite')]
     public function removeFavorite(int $id, ProductRepository $productRepository, FavoriteRepository $favoriteRepository, EntityManagerInterface $entityManager): Response
     {
         $product = $productRepository->find($id);
@@ -193,18 +202,6 @@ class ProductController extends AbstractController
         $entityManager->flush();;
         return $this->render('product/show.html.twig', [
             'product' => $product,
-        ]);
-    }
-
-    #[Route('/user/list', name: 'product_user_list')]
-    public function userList(ProductRepository $productRepository, EntityManagerInterface $entityManager): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        $products = $productRepository->findBy(['user' => $user]);
-
-        return $this->render('login/login.html.twig', [
-            'products' => $products,
         ]);
     }
 }

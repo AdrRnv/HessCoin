@@ -4,6 +4,8 @@ twig:
       search: ''
       location: ''
       category: ''
+      minPrice: null
+      maxPrice: null
 
 when@test:
     twig:
