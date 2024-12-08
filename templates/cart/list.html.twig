@@ -10,8 +10,11 @@
                 {% for cartProduct in cartProducts %}
                     <div class="w-full max-w-sm mx-auto rounded-md shadow-md overflow-hidden">
                         <div class="relative flex items-end justify-end h-56 w-full">
-                            <img src="{{ cartProduct.product.imageName }}" alt="Product Image"
-                                 class="absolute inset-0 h-full w-full object-cover">
+                            <img
+                                    src="{{ cartProduct.product.imageName starts with 'http' ? cartProduct.product.imageName : asset('uploads/product_images/' ~ cartProduct.product.imageName) }}"
+                                    alt="Product Image"
+                                    class="absolute inset-0 h-full w-full object-cover"
+                            />
                         </div>
                         <div class="px-5 py-3">
                             <h3 class="text-gray-700 uppercase">{{ cartProduct.product.title }}</h3>

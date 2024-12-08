@@ -32,9 +32,13 @@
                     {% for product in products %}
                         <div class="w-full max-w-sm mx-auto rounded-md shadow-md overflow-hidden">
                             <div class="relative flex items-end justify-end h-56 w-full">
-                                <img src="{{ product.imageName }}" alt="Product Image"
-                                     class="absolute inset-0 h-full w-full object-cover">
-                                <button onclick="window.location.href='/cart/add/product/{{ product.id }}';" class="p-2 rounded-full bg-blue-600 text-white mx-5 -mb-4 hover:bg-blue-500 focus:outline-none focus:bg-blue-500 relative">
+                                <img
+                                        src="{{ product.imageName starts with 'http' ? product.imageName : asset('uploads/product_images/' ~ product.imageName) }}"
+                                        alt="Product Image"
+                                        class="absolute inset-0 h-full w-full object-cover"
+                                />
+                                <button onclick="window.location.href='/cart/add/product/{{ product.id }}';"
+                                        class="p-2 rounded-full bg-blue-600 text-white mx-5 -mb-4 hover:bg-blue-500 focus:outline-none focus:bg-blue-500 relative">
                                     <svg class="h-5 w-5" fill="none" stroke-linecap="round" stroke-linejoin="round"
                                          stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                                         <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -46,8 +50,10 @@
                                 <span class="text-gray-500 mt-2">{{ product.price }} €</span>
                                 {% if app.user %}
                                     {% set isFavorite = product.id in favoriteProductIds %}
-                                    <form action="{{ path(isFavorite ? 'remove_favorite' : 'add_favorite', {'id': product.id}) }}" method="POST">
-                                        <button type="submit" class="mt-4 inline-block text-blue-600 hover:text-blue-500">
+                                    <form action="{{ path(isFavorite ? 'remove_favorite' : 'add_favorite', {'id': product.id}) }}"
+                                          method="POST">
+                                        <button type="submit"
+                                                class="mt-4 inline-block text-blue-600 hover:text-blue-500">
                                             {% if isFavorite %}
                                                 Enlever des favoris
                                             {% else %}
@@ -56,7 +62,8 @@
                                         </button>
                                     </form>
                                 {% endif %}
-                                <a href="{{ path('product_show',{ id: product.id }) }}" class="mt-4 inline-block text-blue-600 hover:text-blue-500">Voir plus</a>
+                                <a href="{{ path('product_show',{ id: product.id }) }}"
+                                   class="mt-4 inline-block text-blue-600 hover:text-blue-500">Voir plus</a>
                             </div>
                         </div>
                     {% endfor %}

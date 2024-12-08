@@ -31,8 +31,11 @@
                         {% for product in products %}
                             <div class="w-full max-w-sm mx-auto rounded-md shadow-md overflow-hidden">
                                 <div class="relative flex items-end justify-end h-56 w-full">
-                                    <img src="{{ product.imageName }}" alt="Product Image"
-                                         class="absolute inset-0 h-full w-full object-cover">
+                                    <img
+                                            src="{{ product.imageName starts with 'http' ? product.imageName : asset('uploads/product_images/' ~ product.imageName) }}"
+                                            alt="Product Image"
+                                            class="absolute inset-0 h-full w-full object-cover"
+                                    />
                                     <button onclick="window.location.href='/cart/add/product/{{ product.id }}';"
                                             class="p-2 rounded-full bg-blue-600 text-white mx-5 -mb-4 hover:bg-blue-500 focus:outline-none focus:bg-blue-500 relative">
                                         <svg class="h-5 w-5" fill="none" stroke-linecap="round" stroke-linejoin="round"

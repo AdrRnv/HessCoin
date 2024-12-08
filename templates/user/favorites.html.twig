@@ -12,8 +12,11 @@
             {% for favorite in favorites %}
                 <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
                     {% if favorite.product.imageName %}
-                        <img src="{{ favorite.product.imageName }}"
-                             class="w-full h-40 object-cover rounded-t-lg">
+                        <img
+                                src="{{ favorite.product.imageName starts with 'http' ? favorite.product.imageName : asset('uploads/product_images/' ~ favorite.product.imageName) }}"
+                                alt="Product Image"
+                                class="absolute inset-0 h-full w-full object-cover"
+                        />
                     {% endif %}
                     <h2 class="text-xl font-semibold mt-2">{{ favorite.product.title }}</h2>
                     <p class="text-gray-600">{{ favorite.product.description|length > 100
