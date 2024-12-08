@@ -4,6 +4,7 @@
 
 {% block body %}
     <form method="get" action="{{ path('app_product_list') }}">
+        <input type="hidden" name="search" value="{{ search|e }}">
         <select name="category" class="border rounded p-2" onchange="this.form.submit()">
             <option value="">All Categories</option>
             {% for category in categories %}
