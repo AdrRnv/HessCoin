@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Form\ProductType;
 use App\Repository\FavoriteRepository;
 use App\Repository\ProductRepository;
+use App\Service\FavoriteService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,9 +23,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ProductController extends AbstractController
 {
 
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
-
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly FavoriteService $favoriteService,
+    ){
     }
 
     #[Route('/', name: 'app_product_index')]
@@ -54,8 +56,8 @@ class ProductController extends AbstractController
 
         $categories = $entityManager->getRepository(Category::class)->findAll();
 
-        $minPrice = $minPrice !== null ? (float) $minPrice : null;
-        $maxPrice = $maxPrice !== null ? (float) $maxPrice : null;
+        $minPrice = $minPrice !== null ? (float)$minPrice : null;
+        $maxPrice = $maxPrice !== null ? (float)$maxPrice : null;
 
         $filteredProducts = $this->entityManager->getRepository(Product::class)->findFilteredProducts($search, $categoryFilter, $locationFilter, $minPrice, $maxPrice);
         $productsByCategory = [];
@@ -82,7 +84,6 @@ class ProductController extends AbstractController
             'maxPrice' => $maxPrice,
         ]);
     }
-
 
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/add', name: 'app_product_add')]
@@ -120,11 +121,11 @@ class ProductController extends AbstractController
         $product = $this->entityManager->getRepository(Product::class)->find($id);
         $this->entityManager->remove($product);
         $this->entityManager->flush();
-        return $this->redirectToRoute('app_product_list');
+        return $this->redirectToRoute('app_login');
     }
 
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    #[Route('/cart/{id}', name: 'app_product_delete')]
+    #[Route('/cart/{id}', name: 'app_product_cart')]
     public function addToCart(int $id): Response
     {
         $product = $this->entityManager->getRepository(Product::class)->find($id);
@@ -150,16 +151,16 @@ class ProductController extends AbstractController
             throw $this->createNotFoundException('Product not found');
         }
 
+        /** @var User $user */
         $user = $this->getUser();
-        $favorite = new Favorite();
-        $favorite->setUser($user);
-        $favorite->setProduct($product);
+        $favorite = $this->favoriteService->createFavorite($user, $product);
+        $entityManager->persist($favorite);
 
-        $product->getCategory()->setTotalLikes($product->getCategory()->getTotalLikes() + 1);
+        $product->getCategory()->incrementTotalLikes();
+        $product->incrementLikes();
 
         $entityManager->persist($product);
-        $entityManager->persist($favorite);
-        $product->setLikesCount($product->getLikesCount() + 1);
+
         $entityManager->flush();
 
         return $this->redirectToRoute('app_product_list');
@@ -181,8 +182,8 @@ class ProductController extends AbstractController
 
         if ($favorite) {
             $entityManager->remove($favorite);
-            $product->setLikesCount($product->getLikesCount() - 1);
-            $product->getCategory()->setTotalLikes($product->getCategory()->getTotalLikes() - 1);
+            $product->incrementLikes(-1);
+            $product->getCategory()->incrementTotalLikes(-1);
             $entityManager->persist($product);
             $entityManager->flush();
         }
@@ -194,12 +195,11 @@ class ProductController extends AbstractController
     public function show(int $id, ProductRepository $productRepository, EntityManagerInterface $entityManager): Response
     {
         $product = $productRepository->find($id);
-
         if (!$product) {
             return $this->redirectToRoute('app_product_list');
         }
-        $product->setViews($product->getViews() + 1);
-        $entityManager->flush();;
+        $product->incrementViews();
+        $entityManager->flush();
         return $this->render('product/show.html.twig', [
             'product' => $product,
         ]);

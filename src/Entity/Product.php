@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\IdTrait;
+use App\EventListener\ProductListener;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\EntityListeners([ProductListener::class])]
 class Product
 {
     public const STATUS_AVAILABLE = 0;
@@ -189,5 +191,14 @@ class Product
         $this->status = $status;
     }
 
+    public function incrementLikes(?int $increment = 1): void
+    {
+        $this->likesCount += $increment;
+    }
+
+    public function incrementViews(?int $increment = 1): void
+    {
+        $this->views += $increment;
+    }
 
 }

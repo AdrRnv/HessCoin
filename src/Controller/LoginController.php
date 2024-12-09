@@ -16,15 +16,13 @@ class LoginController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, EntityManagerInterface $entityManager): Response
     {
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
         /** @var User $user */
         $user = $this->getUser();
-        $products = $entityManager->getRepository(Product::class)->findBy(['user' => $user]);
+        $products = $entityManager->getRepository(Product::class)->findBy(['user' => $user, 'status' => Product::STATUS_AVAILABLE]);
 
         return $this->render('login/login.html.twig', [
             'last_username' => $lastUsername,

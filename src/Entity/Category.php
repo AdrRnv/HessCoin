@@ -88,4 +88,9 @@ class Category
         $this->products = $products;
     }
 
+    public function incrementTotalLikes(?int $increment = 1): void
+    {
+        $this->totalLikes += $increment;
+    }
+
 }
