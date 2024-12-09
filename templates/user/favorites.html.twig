@@ -15,7 +15,7 @@
                         <img
                                 src="{{ favorite.product.imageName starts with 'http' ? favorite.product.imageName : asset('uploads/product_images/' ~ favorite.product.imageName) }}"
                                 alt="Product Image"
-                                class="absolute inset-0 h-full w-full object-cover"
+                                class="w-full h-40 object-cover rounded"
                         />
                     {% endif %}
                     <h2 class="text-xl font-semibold mt-2">{{ favorite.product.title }}</h2>
