@@ -9,9 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
@@ -34,6 +32,16 @@ class CategoryController extends AbstractController
         $categories = $entityManager->getRepository(Category::class)->findAll();
 
         return $this->render('category/list.html.twig', [
+            'categories' => $categories,
+        ]);
+    }
+
+    #[Route('/list/admin', name: 'app_category_list_admin')]
+    public function adminlist(EntityManagerInterface $entityManager): Response
+    {
+        $categories = $entityManager->getRepository(Category::class)->findAll();
+
+        return $this->render('admin/category_list.html.twig', [
             'categories' => $categories,
         ]);
     }
@@ -69,6 +77,6 @@ class CategoryController extends AbstractController
         $category = $this->entityManager->getRepository(Category::class)->find($id);
         $this->entityManager->remove($category);
         $this->entityManager->flush();
-        return $this->redirectToRoute('app_category_list');
+        return $this->redirectToRoute('app_category_list_admin');
     }
 }

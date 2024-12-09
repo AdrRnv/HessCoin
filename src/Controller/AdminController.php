@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
-
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 class AdminController extends AbstractController
 {
     private ApiProductService $apiProductService;

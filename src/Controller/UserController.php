@@ -16,6 +16,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ){
+    }
+
     #[Route('/user')]
     public function index(): Response
     {
@@ -45,16 +50,13 @@ class UserController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Récupération des produits de l'utilisateur
         $products = $entityManager->getRepository(Product::class)->findBy([
             'user' => $user,
         ]);
 
-        // Création du formulaire pour le profil utilisateur
         $form = $this->createForm(UserProfileType::class, $user);
         $form->handleRequest($request);
 
-        // Vérifie si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($user);
             $entityManager->flush();
