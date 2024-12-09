@@ -12,9 +12,8 @@
     <div class="container mx-auto flex justify-between items-center">
         <a href="#" class="text-xl font-bold">Admin Panel</a>
         <ul class="flex space-x-4">
-            <li><a href="/admin" class="hover:underline">Dashboard</a></li>
-            <li><a href="/admin/settings" class="hover:underline">Settings</a></li>
-            <li><a href="/logout" class="hover:underline">Logout</a></li>
+            <li><a href="{{ path('app_home') }}" class="hover:underline">Home</a></li>
+            <li><a href="{{ path('app_category_add') }}" class="hover:underline">New Category</a></li>
         </ul>
     </div>
 </nav>

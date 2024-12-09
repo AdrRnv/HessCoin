@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\Purchase;
 use App\Entity\User;
 use App\Service\ApiCategoryService;
 use App\Service\ApiProductService;
@@ -15,12 +16,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Config\Doctrine\Orm\EntityManagerConfig;
 
 class AdminController extends AbstractController
 {
@@ -39,9 +40,12 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin',name: 'admin_dashboard')]
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
-        return $this->render('admin/index.html.twig');
+        $purchases = $entityManager->getRepository(Purchase::class)->findAll();
+        return $this->render('admin/index.html.twig', [
+            'purchases' => $purchases,
+        ]);
     }
 
     #[Route('/importProductsApi',name: 'importProductsApi')]

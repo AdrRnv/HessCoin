@@ -22,21 +22,6 @@ class CategoryType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Titre',
-            ])
-            ->add('imageFile', VichFileType::class, [
-                'label' => 'Exercise Image',
-                'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => [
-                            'image/jpeg',
-                            'image/png',
-                            'image/gif',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid image (JPEG, PNG, GIF)',
-                    ])
-                ],
             ]);
     }
 

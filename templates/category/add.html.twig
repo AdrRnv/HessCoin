@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'adminbase.html.twig' %}
 
 {% block title %}Ajouter une catégorie{% endblock %}
 
@@ -13,11 +13,6 @@
                 <div class="mt-4">
                     Nom
                     {{ form_widget(form.name, {'attr': {'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'}}) }}
-                </div>
-
-                <div class="mt-4">
-                    Image
-                    {{ form_widget(form.imageFile, {'attr': {'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'}}) }}
                 </div>
 
                 <div class="flex items-center justify-between mt-6">

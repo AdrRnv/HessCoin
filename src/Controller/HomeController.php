@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class HomeController extends AbstractController
 {
@@ -15,6 +16,10 @@ class HomeController extends AbstractController
     {
 
     }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route('/', name: 'app_home')]
     public function index(): Response
     {
@@ -23,14 +28,9 @@ class HomeController extends AbstractController
                 'User-Agent' => 'HessCoin App',
             ]
         ]);
-        $response = $client->request('GET','https://dummyjson.com/products');
+        $client->request('GET', 'https://dummyjson.com/products');
 
         $categories = $this->entityManager->getRepository(Category::class)->findTopTwoCategoriesByLikes();
-        $products = [];
-        /** @var Category $category */
-        foreach ($categories as $category) {
-            $products[] = $category->getProducts();
-        }
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',

@@ -10,11 +10,6 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for category in categories %}
                         <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-300">
-                            {% if category.imageName %}
-                                <img src="{{ asset('uploads/category_images/' ~ category.imageName) }}"
-                                     alt="{{ category.name }}"
-                                     class="w-full h-40 object-cover rounded-t-lg">
-                            {% endif %}
                             <div class="p-4">
                                 <h2 class="text-xl font-semibold text-gray-800">{{ category.name }}</h2>
                                 <a href="#" class="mt-4 inline-block text-blue-600 hover:text-blue-500">Voir plus</a>
